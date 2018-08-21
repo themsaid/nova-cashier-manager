@@ -1,4 +1,6 @@
-# Managing Stripe subscription from inside Laravel Nova
+# Laravel Nova / Laravel Cashier
+
+This package is work in progress...
 
 ## Installation and usage
 
