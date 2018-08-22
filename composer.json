@@ -1,5 +1,5 @@
 {
-    "name": "themsaid/cashier-tool",
+    "name": "themsaid/nova-cashier-manager",
     "description": "Managing Stripe subscriptions inside the incredible Laravel Nova admin panel.",
     "keywords": [
         "laravel",

@@ -1,10 +1,26 @@
 # Laravel Nova / Laravel Cashier
 
-This package is work in progress...
+This package adds several components to your Laravel Nova Admin panel to help you with managing customer subscriptions, it works hand
+in hand with [Laravel Cashier](https://github.com/laravel/cashier).
+
+## How it works
+
+This package adds a section in the billable resource details view with some information about the subscription:
 
 ## Installation and usage
 
-WIP
+You may require this package using composer:
+
+```
+composer require themsaid/nova-cashier-manager
+```
+
+Now in your billable resource, let's say User, add the following to the `fields()` method:
+
+```
+CashierResourceTool::make()->onlyOnDetail()
+```
+
 
 ## License
 
