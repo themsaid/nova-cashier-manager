@@ -281,7 +281,7 @@
                     <tbody>
                     <tr v-for="card in cards">
                         <td><span class="whitespace-no-wrap text-left">{{card.brand}}</span></td>
-                        <td><span class="whitespace-no-wrap text-left">**********{{cards.last4}}</span></td>
+                        <td><span class="whitespace-no-wrap text-left">**********{{card.last4}}</span></td>
                         <td><span class="whitespace-no-wrap text-left">{{card.exp_month}}/{{card.exp_year}}</span></td>
                     </tr>
                     </tbody>
