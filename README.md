@@ -9,6 +9,10 @@ This package adds a section in the billable resource details view with some info
 
 <img src="https://github.com/themsaid/nova-cashier-tool/blob/master/resource-tool.jpg?raw=true">
 
+If you want to display more details and be able to manage the subscription you may click the "Manage" link which will lead you
+to a screen with full management capabilities.
+
+<img src="https://github.com/themsaid/nova-cashier-tool/blob/master/billable-screen.jpg?raw=true">
 
 ## Installation and usage
 
