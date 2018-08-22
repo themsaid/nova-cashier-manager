@@ -217,7 +217,7 @@
                         <td><span class="whitespace-no-wrap text-left">{{invoice.period_start}}</span></td>
                         <td><span class="whitespace-no-wrap text-left">{{invoice.period_end}}</span></td>
                         <td class="text-right">
-                            <button class="btn btn-sm btn-outline" v-on:click="refundCharge(invoice.charge_id)">
+                            <button class="btn btn-sm btn-outline" v-on:click="refundCharge(invoice.charge_id)" v-if="invoice.total > 0">
                                 Refund
                             </button>
                         </td>

@@ -14,6 +14,8 @@ to a screen with full management capabilities.
 
 <img src="https://github.com/themsaid/nova-cashier-tool/blob/master/billable-screen.jpg?raw=true">
 
+Currently this package works only with laravel cashier for Stripe, Braintree is not supported yet.
+
 ## Installation and usage
 
 You may require this package using composer:
