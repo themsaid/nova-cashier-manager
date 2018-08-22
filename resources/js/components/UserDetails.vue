@@ -28,7 +28,7 @@
              */
             loadUserData(){
                 console.log(this.userId);
-                
+
                 axios.get('/nova-cashier-tool-api/user/' + this.userId)
                         .then(response => {
                             this.user = response.data.user;
@@ -38,7 +38,7 @@
                             this.charges = response.data.charges;
                             this.plans = response.data.plans;
 
-                            this.newPlan = response.data.subscription.stripe_plan;
+                            this.newPlan = response.data.subscription ? response.data.subscription.stripe_plan : null;
 
                             this.loading = false;
                         });
@@ -133,7 +133,11 @@
             </p>
         </card>
 
-        <div class="card mb-6 py-3 px-6" v-if="!loading">
+        <div class="card mb-6 py-3 px-6" v-if="!loading && !subscription">
+            <p class="text-90">User has no subscription.</p>
+        </div>
+
+        <div class="card mb-6 py-3 px-6" v-if="!loading && subscription">
             <div class="flex border-b border-40">
                 <div class="w-1/4 py-4"><h4 class="font-normal text-80">Customer</h4></div>
                 <div class="w-3/4 py-4"><p class="text-90">{{user.name}} ({{user.email}})</p></div>
@@ -171,7 +175,7 @@
                 <div class="w-3/4 py-4"><p class="text-90">{{subscription.current_period_start}} => {{subscription.current_period_end}}</p></div>
             </div>
 
-            <div class="flex border-b border-40" v-if="subscription">
+            <div class="flex border-b border-40 remove-bottom-border" v-if="subscription">
                 <div class="w-1/4 py-4"><h4 class="font-normal text-80">Status</h4></div>
                 <div class="w-3/4 py-4">
                     <p class="text-90">
@@ -225,7 +229,7 @@
             </div>
         </div>
 
-        <div class="card relative" v-if="!loading && charges && charges.length">
+        <div class="card mb-6 relative" v-if="!loading && charges && charges.length">
             <div class="py-3 flex items-center border-b border-50">
                 <div class="px-3">
                     Charges
@@ -255,6 +259,32 @@
                                 Refund
                             </button>
                         </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card mb-6 relative" v-if="!loading && cards && cards.length">
+            <div class="py-3 flex items-center border-b border-50">
+                <div class="px-3">
+                    Cards
+                </div>
+            </div> <!---->
+            <div class="overflow-hidden overflow-x-auto relative">
+                <table cellpadding="0" cellspacing="0" data-testid="resource-table" class="table w-full">
+                    <thead>
+                    <tr>
+                        <th class="text-left"><span class="cursor-pointer inline-flex items-center">Brand</span></th>
+                        <th class="text-left"><span class="cursor-pointer inline-flex items-center">Number</span></th>
+                        <th class="text-left"><span class="cursor-pointer inline-flex items-center">Expiration</span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="card in cards">
+                        <td><span class="whitespace-no-wrap text-left">{{card.brand}}</span></td>
+                        <td><span class="whitespace-no-wrap text-left">**********{{cards.last4}}</span></td>
+                        <td><span class="whitespace-no-wrap text-left">{{card.exp_month}}/{{card.exp_year}}</span></td>
                     </tr>
                     </tbody>
                 </table>

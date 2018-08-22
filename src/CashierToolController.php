@@ -39,6 +39,7 @@ class CashierToolController extends Controller
      * Return the user response.
      *
      * @param  int $billableId
+     * @param  bool $brief
      * @return \Illuminate\Http\Response
      */
     public function user($billableId)
@@ -47,15 +48,21 @@ class CashierToolController extends Controller
 
         $subscription = $billable->subscription();
 
+        if (! $subscription) {
+            return [
+                'subscription' => null,
+            ];
+        }
+
         $stripeSubscription = StripeSubscription::retrieve($subscription->stripe_id);
 
         return [
             'user' => $billable->toArray(),
-            'cards' => $this->formatCards($billable->cards(), $billable->defaultCard()->id),
-            'invoices' => $this->formatInvoices($billable->invoicesIncludingPending()),
-            'charges' => $this->formatCharges($billable->asStripeCustomer()->charges()),
+            'cards' => request('brief') ? [] : $this->formatCards($billable->cards(), $billable->defaultCard()->id),
+            'invoices' => request('brief') ? [] : $this->formatInvoices($billable->invoicesIncludingPending()),
+            'charges' => request('brief') ? [] : $this->formatCharges($billable->asStripeCustomer()->charges()),
             'subscription' => $this->formatSubscription($subscription, $stripeSubscription),
-            'plans' => $this->formatPlans(Plan::all(['limit' => 100])),
+            'plans' => request('brief') ? [] : $this->formatPlans(Plan::all(['limit' => 100])),
         ];
     }
 
