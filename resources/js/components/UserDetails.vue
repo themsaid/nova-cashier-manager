@@ -27,8 +27,6 @@
              * Load the user data.
              */
             loadUserData(){
-                console.log(this.userId);
-
                 axios.get('/nova-cashier-tool-api/user/' + this.userId)
                         .then(response => {
                             this.user = response.data.user;
