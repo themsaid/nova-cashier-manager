@@ -7,6 +7,9 @@ in hand with [Laravel Cashier](https://github.com/laravel/cashier).
 
 This package adds a section in the billable resource details view with some information about the subscription:
 
+<img src="https://github.com/themsaid/nova-cashier-tool/blob/master/resource-tool.jpg?raw=true">
+
+
 ## Installation and usage
 
 You may require this package using composer:
