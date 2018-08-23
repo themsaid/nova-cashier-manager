@@ -24,6 +24,22 @@ You may require this package using composer:
 composer require themsaid/nova-cashier-manager
 ```
 
+Next up, you must register the tool with Nova in the tools method of the NovaServiceProvider:
+
+```
+// in app/Providers/NovaServiceProvder.php
+
+// ...
+
+public function tools()
+{
+   return [
+        // ...
+        new \Themsaid\CashierTool\CashierTool(),
+    ];
+}
+```
+
 Now in your billable resource, let's say User, add the following to the `fields()` method:
 
 ```
