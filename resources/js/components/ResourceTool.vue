@@ -7,7 +7,13 @@
                 loading: true,
                 user: null,
                 subscription: null,
+            }
+        },
 
+
+        computed: {
+            basePath() {
+                return Nova.config.base;
             }
         },
 
@@ -64,7 +70,7 @@
                         <span v-if="subscription.cancelled || subscription.cancel_at_period_end" class="text-danger">Cancelled</span>
                         <span v-if="subscription.active && !subscription.cancelled && !subscription.cancel_at_period_end">Active</span>
                         ·
-                        <a class="text-primary no-underline" :href="'/nova/cashier-tool/user/'+resourceId">
+                        <a class="text-primary no-underline" :href="basePath+'/cashier-tool/user/'+resourceId">
                             Manage
                         </a>
                     </p>
