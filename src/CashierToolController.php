@@ -2,11 +2,11 @@
 
 namespace Themsaid\CashierTool;
 
-use Illuminate\Http\Request;
 use Stripe\Plan;
 use Stripe\Refund;
 use Stripe\Stripe;
 use Stripe\Dispute;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Config\Repository;
 use Illuminate\Routing\Controller;
@@ -46,7 +46,9 @@ class CashierToolController extends Controller
     {
         $billable = (new $this->stripeModel)->find($billableId);
 
-        $subscription = $billable->subscription();
+        $subscription = $billable->subscription(
+            config('nova-cashier-manager.subscription_plan', 'default')
+        );
 
         if (! $subscription) {
             return [
@@ -143,7 +145,7 @@ class CashierToolController extends Controller
      * @param  \Stripe\Subscription $stripeSubscription
      * @return array
      */
-    function formatSubscription($subscription, $stripeSubscription)
+    public function formatSubscription($subscription, $stripeSubscription)
     {
         return array_merge($subscription->toArray(), [
             'plan_amount' => $stripeSubscription->plan->amount,
