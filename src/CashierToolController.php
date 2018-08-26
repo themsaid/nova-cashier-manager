@@ -2,11 +2,11 @@
 
 namespace Themsaid\CashierTool;
 
-use Illuminate\Http\Request;
 use Stripe\Plan;
 use Stripe\Refund;
 use Stripe\Stripe;
 use Stripe\Dispute;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Config\Repository;
 use Illuminate\Routing\Controller;
@@ -20,6 +20,13 @@ class CashierToolController extends Controller
     public $stripeModel;
 
     /**
+     * The subscription plan name.
+     *
+     * @var string
+     */
+    public $plan;
+
+    /**
      * Create a new controller instance.
      *
      * @param \Illuminate\Config\Repository $config
@@ -30,6 +37,8 @@ class CashierToolController extends Controller
             Stripe::setApiKey($config->get('services.stripe.secret'));
 
             $this->stripeModel = $config->get('services.stripe.model');
+
+            $this->plan = $config->get('nova-cashier-manager.subscription_plan');
 
             return $next($request);
         });
@@ -46,7 +55,7 @@ class CashierToolController extends Controller
     {
         $billable = (new $this->stripeModel)->find($billableId);
 
-        $subscription = $billable->subscription();
+        $subscription = $billable->subscription($this->plan);
 
         if (! $subscription) {
             return [
@@ -78,9 +87,9 @@ class CashierToolController extends Controller
         $billable = (new $this->stripeModel)->find($billableId);
 
         if ($request->input('now')) {
-            $billable->subscription()->cancelNow();
+            $billable->subscription($this->plan)->cancelNow();
         } else {
-            $billable->subscription()->cancel();
+            $billable->subscription($this->plan)->cancel();
         }
     }
 
@@ -95,7 +104,7 @@ class CashierToolController extends Controller
     {
         $billable = (new $this->stripeModel)->find($billableId);
 
-        $billable->subscription()->swap($request->input('plan'));
+        $billable->subscription($this->plan)->swap($request->input('plan'));
     }
 
     /**
@@ -110,7 +119,7 @@ class CashierToolController extends Controller
     {
         $billable = (new $this->stripeModel)->find($billableId);
 
-        $billable->subscription()->resume();
+        $billable->subscription($this->plan)->resume();
     }
 
     /**
@@ -143,7 +152,7 @@ class CashierToolController extends Controller
      * @param  \Stripe\Subscription $stripeSubscription
      * @return array
      */
-    function formatSubscription($subscription, $stripeSubscription)
+    public function formatSubscription($subscription, $stripeSubscription)
     {
         return array_merge($subscription->toArray(), [
             'plan_amount' => $stripeSubscription->plan->amount,
