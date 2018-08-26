@@ -15,16 +15,18 @@ use Stripe\Subscription as StripeSubscription;
 class CashierToolController extends Controller
 {
     /**
+     * The model used by Stripe.
+     *
      * @var string
      */
     public $stripeModel;
 
     /**
-     * The subscription plan name.
+     * The subscription name.
      *
      * @var string
      */
-    public $plan;
+    public $subscriptionName;
 
     /**
      * Create a new controller instance.
@@ -38,7 +40,7 @@ class CashierToolController extends Controller
 
             $this->stripeModel = $config->get('services.stripe.model');
 
-            $this->plan = $config->get('nova-cashier-manager.subscription_plan');
+            $this->subscriptionName = $config->get('nova-cashier-manager.subscription_name');
 
             return $next($request);
         });
@@ -55,7 +57,7 @@ class CashierToolController extends Controller
     {
         $billable = (new $this->stripeModel)->find($billableId);
 
-        $subscription = $billable->subscription($this->plan);
+        $subscription = $billable->subscription($this->subscriptionName);
 
         if (! $subscription) {
             return [
@@ -87,9 +89,9 @@ class CashierToolController extends Controller
         $billable = (new $this->stripeModel)->find($billableId);
 
         if ($request->input('now')) {
-            $billable->subscription($this->plan)->cancelNow();
+            $billable->subscription($this->subscriptionName)->cancelNow();
         } else {
-            $billable->subscription($this->plan)->cancel();
+            $billable->subscription($this->subscriptionName)->cancel();
         }
     }
 
@@ -104,7 +106,7 @@ class CashierToolController extends Controller
     {
         $billable = (new $this->stripeModel)->find($billableId);
 
-        $billable->subscription($this->plan)->swap($request->input('plan'));
+        $billable->subscription($this->subscriptionName)->swap($request->input('plan'));
     }
 
     /**
@@ -119,7 +121,7 @@ class CashierToolController extends Controller
     {
         $billable = (new $this->stripeModel)->find($billableId);
 
-        $billable->subscription($this->plan)->resume();
+        $billable->subscription($this->subscriptionName)->resume();
     }
 
     /**

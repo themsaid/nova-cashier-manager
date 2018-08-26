@@ -16,10 +16,6 @@ class CashierToolServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'nova-cashier-tool');
 
         $this->loadRoutesFrom(__DIR__.'/routes.php');
-
-        $this->publishes([
-            __DIR__ . '/config.php' => config_path('nova-cashier-manager.php')
-        ], 'config');
     }
 
     /**
@@ -29,6 +25,14 @@ class CashierToolServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/config.php', 'nova-cashier-manager');
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/nova-cashier-manager.php' => config_path('nova-cashier-manager.php'),
+            ], 'horizon-config');
+        }
+
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/nova-cashier-manager.php', 'nova-cashier-manager'
+        );
     }
 }
