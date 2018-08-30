@@ -3,6 +3,9 @@
 This package adds several components to your Laravel Nova Admin panel to help you with managing customer subscriptions, it works hand
 in hand with [Laravel Cashier](https://github.com/laravel/cashier).
 
+Looking to see high-level information about your application's Stripe balance and charges in a Nova dashboard? Check out [Nova Stripe Dashboard](https://github.com/tightenco/nova-stripe).
+
+
 ## How it works
 
 This package adds a section in the billable resource details view with some information about the subscription:
