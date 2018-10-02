@@ -25,7 +25,7 @@
 
         methods: {
             loadUserData(){
-                axios.get(`/nova-cashier-tool-api/user/${this.resourceId}/?brief=true`)
+                axios.get(`/nova-api/cashier-tool/resource/${this.resourceId}/?brief=true`)
                         .then(response => {
                             this.user = response.data.user;
                             this.subscription = response.data.subscription;
@@ -70,9 +70,9 @@
                         <span v-if="subscription.cancelled || subscription.cancel_at_period_end" class="text-danger">Cancelled</span>
                         <span v-if="subscription.active && !subscription.cancelled && !subscription.cancel_at_period_end">Active</span>
                         ·
-                        <a class="text-primary no-underline" :href="basePath+'/cashier-tool/user/'+resourceId">
+                        <router-link class="text-primary no-underline" :to="{ name: 'cashier-tool-manage-subscription', params: {'resourceId':resourceId}}">
                             Manage
-                        </a>
+                        </router-link>
                     </p>
                 </div>
             </div>

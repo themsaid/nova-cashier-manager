@@ -51,8 +51,8 @@ class CashierToolServiceProvider extends ServiceProvider
         }
 
         \Route::middleware(['nova'])
-            ->domain(config('nova.domain', null))
-            ->prefix('nova-cashier-tool-api')
+            ->namespace('Themsaid\CashierTool')
+            ->prefix('nova-api/cashier-tool')
             ->group(__DIR__.'/routes.php');
     }
 }

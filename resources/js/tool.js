@@ -3,9 +3,9 @@ Nova.booting((Vue, router) => {
     
     router.addRoutes([
         {
-            name: 'cashier-tool-user',
-            path: '/cashier-tool/user/:userId',
-            component: require('./components/UserDetails'),
+            name: 'cashier-tool-manage-subscription',
+            path: '/cashier-tool/manage-subscription/:resourceId',
+            component: require('./components/SubscriptionDetails'),
             props: true
         },
     ])

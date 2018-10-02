@@ -1,7 +1,7 @@
 <?php
 
-Route::get('/user/{id}', 'Themsaid\CashierTool\CashierToolController@user');
-Route::post('/user/{id}/cancel', 'Themsaid\CashierTool\CashierToolController@cancelSubscription');
-Route::post('/user/{id}/resume', 'Themsaid\CashierTool\CashierToolController@resumeSubscription');
-Route::post('/user/{id}/update', 'Themsaid\CashierTool\CashierToolController@updateSubscription');
-Route::post('/user/{id}/refund/{chargeId}', 'Themsaid\CashierTool\CashierToolController@refundCharge');
+Route::get('/resource/{resourceId}', 'CashierToolController@user');
+Route::post('/resource/{resourceId}/cancel', 'CashierToolController@cancelSubscription');
+Route::post('/resource/{resourceId}/resume', 'CashierToolController@resumeSubscription');
+Route::post('/resource/{resourceId}/update', 'CashierToolController@updateSubscription');
+Route::post('/resource/{resourceId}/refund/{chargeId}', 'CashierToolController@refundCharge');
