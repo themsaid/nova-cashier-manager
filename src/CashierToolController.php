@@ -53,26 +53,43 @@ class CashierToolController extends Controller
      * @param  bool $brief
      * @return \Illuminate\Http\Response
      */
-    public function user($billableId)
+    public function user($billableId, $subscriptionId = null)
     {
+        // Get user
         $billable = (new $this->stripeModel)->find($billableId);
 
-        $subscription = $billable->subscription($this->subscriptionName);
+        // Get subscription(s)
+        if (is_null($subscriptionId)) {
+            $subscriptions = $billable->subscriptions()->get();
+        } else {
+            $subscriptions = $billable->subscriptions()->where('id', $subscriptionId)->get();
+        }
 
-        if (! $subscription) {
+        // echo print_r($subscriptions, true); exit;
+
+        if (!$subscriptions) {
             return [
-                'subscription' => null,
+                'subscriptions' => [],
             ];
         }
 
-        $stripeSubscription = StripeSubscription::retrieve($subscription->stripe_id);
+        // Get ALL subscriptions
+        $formattedSubscriptions = [];
+        foreach($subscriptions as $cur_subscription) {
+            $stripeSubscription = StripeSubscription::retrieve($cur_subscription->stripe_id);
+            $formattedSubscriptions[] = $this->formatSubscription($cur_subscription, $stripeSubscription);
+        }
 
+        // Get invoices
+        $invoices = request('brief') ? [] : $this->formatInvoices($billable->invoicesIncludingPending(), array_column($subscriptions->toArray(), 'stripe_id'));
+
+        // Return data
         return [
             'user' => $billable->toArray(),
             'cards' => request('brief') ? [] : $this->formatCards($billable->cards(), $billable->defaultCard()->id),
-            'invoices' => request('brief') ? [] : $this->formatInvoices($billable->invoicesIncludingPending()),
-            'charges' => request('brief') ? [] : $this->formatCharges($billable->asStripeCustomer()->charges()),
-            'subscription' => $this->formatSubscription($subscription, $stripeSubscription),
+            'invoices' => $invoices,
+            'charges' => request('brief') ? [] : $this->formatCharges($billable->asStripeCustomer()->charges(), array_column($invoices, 'id')),
+            'subscriptions' => $formattedSubscriptions,
             'plans' => request('brief') ? [] : $this->formatPlans(Plan::all(['limit' => 100])),
         ];
     }
@@ -84,14 +101,16 @@ class CashierToolController extends Controller
      * @param  int $billableId
      * @return \Illuminate\Http\Response
      */
-    public function cancelSubscription(Request $request, $billableId)
+    public function cancelSubscription(Request $request, $billableId, $subscriptionId)
     {
         $billable = (new $this->stripeModel)->find($billableId);
 
+        $subscription = $billable->subscriptions()->find($subscriptionId);
+
         if ($request->input('now')) {
-            $billable->subscription($this->subscriptionName)->cancelNow();
+            return $billable->subscription($subscription->name)->cancelNow();
         } else {
-            $billable->subscription($this->subscriptionName)->cancel();
+            return $billable->subscription($subscription->name)->cancel();
         }
     }
 
@@ -102,11 +121,15 @@ class CashierToolController extends Controller
      * @param  int $billableId
      * @return \Illuminate\Http\Response
      */
-    public function updateSubscription(Request $request, $billableId)
+    public function updateSubscription(Request $request, $billableId, $subscriptionId)
     {
         $billable = (new $this->stripeModel)->find($billableId);
 
-        $billable->subscription($this->subscriptionName)->swap($request->input('plan'));
+        $subscription = $billable->subscriptions()->find($subscriptionId);
+
+        $billable->subscription($subscription->name)->swap($request->input('plan'))->update([
+            'name' => $request->input('plan')
+        ]);
     }
 
     /**
@@ -117,11 +140,13 @@ class CashierToolController extends Controller
      * @param  int $subscriptionId
      * @return \Illuminate\Http\Response
      */
-    public function resumeSubscription(Request $request, $billableId)
+    public function resumeSubscription(Request $request, $billableId, $subscriptionId)
     {
         $billable = (new $this->stripeModel)->find($billableId);
 
-        $billable->subscription($this->subscriptionName)->resume();
+        $subscription = $billable->subscriptions()->find($subscriptionId);
+
+        $billable->subscription($subscription->name)->resume();
     }
 
     /**
@@ -207,19 +232,23 @@ class CashierToolController extends Controller
      * @param  array $invoices
      * @return array
      */
-    private function formatInvoices($invoices)
+    private function formatInvoices($invoices, $subscription_ids = [])
     {
-        return collect($invoices)->map(function ($invoice) {
+        return collect($invoices)->map(function ($invoice, $key) {
             return [
                 'id' => $invoice->id,
+                'subscription_id' => $invoice->subscription,
                 'total' => $invoice->total,
                 'attempted' => $invoice->attempted,
                 'charge_id' => $invoice->charge,
                 'currency' => $invoice->currency,
                 'period_start' => $invoice->period_start ? Carbon::createFromTimestamp($invoice->period_start)->toDateTimeString() : null,
                 'period_end' => $invoice->period_end ? Carbon::createFromTimestamp($invoice->period_end)->toDateTimeString() : null,
+                'metadata' => $invoice->metadata ? $invoice->metadata : null,
             ];
-        })->toArray();
+        })->filter(function ($invoice, $key) use ($subscription_ids) {
+            return $invoice != null && in_array($invoice['subscription_id'], $subscription_ids);
+        })->values()->toArray();
     }
 
     /**
@@ -228,11 +257,12 @@ class CashierToolController extends Controller
      * @param  array $charges
      * @return array
      */
-    private function formatCharges($charges)
+    private function formatCharges($charges, $invoice_ids)
     {
         return collect($charges->data)->map(function ($charge) {
             return [
                 'id' => $charge->id,
+                'invoice' => $charge->invoice,
                 'amount' => $charge->amount,
                 'amount_refunded' => $charge->amount_refunded,
                 'captured' => $charge->captured,
@@ -244,7 +274,9 @@ class CashierToolController extends Controller
                 'failure_message' => $charge->failure_message,
                 'created' => $charge->created ? Carbon::createFromTimestamp($charge->created)->toDateTimeString() : null,
             ];
-        })->toArray();
+        })->filter(function ($charge, $key) use ($invoice_ids) {
+            return $charge != null && in_array($charge['invoice'], $invoice_ids);
+        })->values()->toArray();
     }
 
     /**
@@ -258,6 +290,7 @@ class CashierToolController extends Controller
         return collect($plans->data)->map(function ($plan) {
             return [
                 'id' => $plan->id,
+                'nickname' => $plan->nickname,
                 'price' => $plan->amount,
                 'interval' => $plan->interval,
                 'currency' => $plan->currency,

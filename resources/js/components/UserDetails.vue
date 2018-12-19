@@ -1,6 +1,6 @@
 <script type="text/ecmascript-6">
     export default {
-        props: ['userId'],
+        props: ['userId','subscriptionId'],
 
 
         data(){
@@ -27,16 +27,16 @@
              * Load the user data.
              */
             loadUserData(){
-                axios.get(`/nova-cashier-tool-api/user/${this.userId}`)
+                axios.get('/nova-cashier-tool-api/user/'+this.userId+'/subscriptions/'+this.subscriptionId)
                         .then(response => {
                             this.user = response.data.user;
-                            this.subscription = response.data.subscription;
+                            this.subscription = response.data.subscriptions[0];
                             this.cards = response.data.cards;
                             this.invoices = response.data.invoices;
                             this.charges = response.data.charges;
                             this.plans = response.data.plans;
 
-                            this.newPlan = response.data.subscription ? response.data.subscription.stripe_plan : null;
+                            this.newPlan = this.subscription ? this.subscription.stripe_plan : null;
 
                             this.loading = false;
                         });
@@ -47,9 +47,11 @@
              * Refund Charge.
              */
             refundCharge(chargeId){
-                this.loading = true;
+                var do_refund = confirm("Are you sure you want to refund this charge?");
+                if (do_refund == true) {
+                    this.loading = true;
 
-                axios.post(`/nova-cashier-tool-api/user/${this.userId}/refund/${chargeId}`)
+                    axios.post(`/nova-cashier-tool-api/user/${this.userId}/refund/${chargeId}`)
                         .then(response => {
                             this.$toasted.show("Refunded successfully!", {type: "success"});
 
@@ -57,7 +59,8 @@
                         })
                         .catch(errors => {
                             this.$toasted.show(errors.response.data.message, {type: "error"});
-                        })
+                        });
+                }
             },
 
 
@@ -65,9 +68,11 @@
              * Cancel subscription.
              */
             cancelSubscription(){
-                this.loading = true;
+                var do_cancel = confirm("Are you sure you want to cancel this subscription?");
+                if (do_cancel == true) {
+                    this.loading = true;
 
-                axios.post(`/nova-cashier-tool-api/user/${this.userId}/cancel`)
+                    axios.post('/nova-cashier-tool-api/user/'+this.userId+'/subscriptions/'+this.subscriptionId+'/cancel')
                         .then(response => {
                             this.$toasted.show("Cancelled successfully!", {type: "success"});
 
@@ -75,7 +80,8 @@
                         })
                         .catch(errors => {
                             this.$toasted.show(errors.response.data.message, {type: "error"});
-                        })
+                        });
+                }
             },
 
 
@@ -85,7 +91,7 @@
             resumeSubscription(){
                 this.loading = true;
 
-                axios.post(`/nova-cashier-tool-api/user/${this.userId}/resume`)
+                axios.post('/nova-cashier-tool-api/user/'+this.userId+'/subscriptions/'+this.subscriptionId+'/resume')
                         .then(response => {
                             this.$toasted.show("Resumed successfully!", {type: "success"});
 
@@ -103,7 +109,7 @@
             updateSubscription(){
                 this.loading = true;
 
-                axios.post(`/nova-cashier-tool-api/user/${this.userId}/update`, {plan: this.newPlan})
+                axios.post('/nova-cashier-tool-api/user/'+this.userId+'/subscriptions/'+this.subscriptionId+'/update', {plan: this.newPlan})
                         .then(response => {
                             this.$toasted.show("Updated successfully!", {type: "success"});
 
@@ -119,7 +125,7 @@
 
 <template>
     <div>
-        <heading class="mb-6">Cashier Manager</heading>
+        <heading class="mb-6">Subscription Manager</heading>
 
         <card class="bg-90 flex flex-col items-center justify-center" style="min-height: 300px" v-if="loading">
             <svg class="spin fill-80 mb-6" width="69" height="72" viewBox="0 0 23 24" xmlns="http://www.w3.org/2000/svg">
@@ -130,10 +136,6 @@
                 Fetching subscription information from Stripe. Might take a few moments.
             </p>
         </card>
-
-        <div class="card mb-6 py-3 px-6" v-if="!loading && !subscription">
-            <p class="text-90">User has no subscription.</p>
-        </div>
 
         <div class="card mb-6 py-3 px-6" v-if="!loading && subscription">
             <div class="flex border-b border-40">
@@ -152,12 +154,11 @@
                     <select v-model="newPlan" class="form-control form-select">
                         <option value="" disabled="disabled" selected="selected">Choose New Plan</option>
                         <option :value="plan.id" v-for="plan in plans">
-                            {{plan.id}} ({{plan.price / 100}} {{plan.currency}} / {{plan.interval}})
+                            {{plan.nickname}} ({{plan.price / 100}} {{plan.currency}} / {{plan.interval}})
                         </option>
                     </select>
 
-                    <button class="btn btn-sm btn-outline" v-if="newPlan && newPlan != subscription.stripe_plan && subscription.active && !subscription.cancel_at_period_end"
-                            v-on:click="updateSubscription()">
+                    <button class="btn btn-sm btn-outline" v-if="newPlan && newPlan != subscription.stripe_plan && subscription.active && !subscription.cancel_at_period_end" v-on:click="updateSubscription()">
                         Update Plan
                     </button>
                 </div>
@@ -181,13 +182,11 @@
                         <span v-if="subscription.cancelled || subscription.cancel_at_period_end" class="text-danger">Cancelled</span>
                         <span v-if="subscription.active && !subscription.cancelled && !subscription.cancel_at_period_end">Active</span>
 
-                        <button class="btn btn-sm btn-outline" v-if="subscription.active && !subscription.cancelled && !subscription.cancel_at_period_end"
-                                v-on:click="cancelSubscription()">
+                        <button class="btn btn-sm btn-outline" v-if="subscription.active && !subscription.cancelled && !subscription.cancel_at_period_end" v-on:click="cancelSubscription()">
                             Cancel
                         </button>
 
-                        <button class="btn btn-sm btn-outline" v-if="subscription.active && subscription.cancel_at_period_end"
-                                v-on:click="resumeSubscription()">
+                        <button class="btn btn-sm btn-outline" v-if="subscription.active && subscription.cancel_at_period_end" v-on:click="resumeSubscription()">
                             Resume
                         </button>
                     </p>
@@ -217,9 +216,9 @@
                         <td><span class="whitespace-no-wrap text-left">{{invoice.period_start}}</span></td>
                         <td><span class="whitespace-no-wrap text-left">{{invoice.period_end}}</span></td>
                         <td class="text-right">
-                            <button class="btn btn-sm btn-outline" v-on:click="refundCharge(invoice.charge_id)" v-if="invoice.total > 0">
+                            <!-- <button class="btn btn-sm btn-outline" v-on:click="refundCharge(invoice.charge_id)" v-if="invoice.total > 0">
                                 Refund
-                            </button>
+                            </button> -->
                         </td>
                     </tr>
                     </tbody>
@@ -247,13 +246,14 @@
                     <tr v-for="charge in charges">
                         <td><span class="whitespace-no-wrap text-left">{{charge.amount / 100}} {{charge.currency}}</span></td>
                         <td>
-                            <span class="whitespace-no-wrap text-left" v-if="charge.amount_refunded">{{charge.amount_refunded / 100}} {{charge.currency}} Refunded</span>
-                            <span class="whitespace-no-wrap text-left text-success" v-if="charge.captured">Successfull</span>
+                            <span class="whitespace-no-wrap text-left text-info" v-if="charge.amount_refunded === charge.amount">Full Refund </span>
+                            <span class="whitespace-no-wrap text-left text-info" v-if="charge.amount_refunded !== charge.amount && charge.amount_refunded > 0">Partial Refund ({{ charge.amount_refunded / 100 }} {{charge.currency}})</span>
+                            <span class="whitespace-no-wrap text-left text-success" v-if="charge.captured && !charge.amount_refunded">Successful</span>
                             <span class="whitespace-no-wrap text-left text-danger" v-if="charge.failure_message">{{charge.failure_message}}</span>
                         </td>
                         <td><span class="whitespace-no-wrap text-left">{{charge.created}}</span></td>
                         <td class="text-right">
-                            <button class="btn btn-sm btn-outline" v-on:click="refundCharge(charge.id)">
+                            <button class="btn btn-sm btn-outline" :disabled="charge.amount_refunded > 0" v-on:click="refundCharge(charge.id)">
                                 Refund
                             </button>
                         </td>

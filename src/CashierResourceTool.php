@@ -15,7 +15,7 @@ class CashierResourceTool extends ResourceTool
      */
     public function name()
     {
-        return 'Manage Subscription';
+        return 'Manage Subscriptions';
     }
 
     /**
