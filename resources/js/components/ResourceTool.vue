@@ -70,9 +70,9 @@
                         <span v-if="subscription.cancelled || subscription.cancel_at_period_end" class="text-danger">Cancelled</span>
                         <span v-if="subscription.active && !subscription.cancelled && !subscription.cancel_at_period_end">Active</span>
                         ·
-                        <a class="text-primary no-underline" :href="basePath+'/cashier-tool/user/'+resourceId">
+                        <router-link class="text-primary no-underline" :to="'/cashier-tool/user/'+resourceId+'/subscriptions/'+subscription.id">
                             Manage
-                        </a>
+                        </router-link>
                     </p>
                 </div>
             </div>
