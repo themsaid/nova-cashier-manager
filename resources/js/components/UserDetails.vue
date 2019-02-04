@@ -248,7 +248,7 @@
                         <td><span class="whitespace-no-wrap text-left">{{charge.amount / 100}} {{charge.currency}}</span></td>
                         <td>
                             <span class="whitespace-no-wrap text-left" v-if="charge.amount_refunded">{{charge.amount_refunded / 100}} {{charge.currency}} Refunded</span>
-                            <span class="whitespace-no-wrap text-left text-success" v-if="charge.captured">Successfull</span>
+                            <span class="whitespace-no-wrap text-left text-success" v-if="charge.captured">Successful</span>
                             <span class="whitespace-no-wrap text-left text-danger" v-if="charge.failure_message">{{charge.failure_message}}</span>
                         </td>
                         <td><span class="whitespace-no-wrap text-left">{{charge.created}}</span></td>
