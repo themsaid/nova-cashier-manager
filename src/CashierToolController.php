@@ -86,7 +86,7 @@ class CashierToolController extends Controller
         // Return data
         return [
             'user' => $billable->toArray(),
-            'cards' => request('brief') ? [] : $this->formatCards($billable->cards(), $billable->defaultCard()->id),
+            'cards' => request('brief') ? [] : $this->formatCards($billable->cards(), optional($billable->defaultCard())->id),
             'invoices' => $invoices,
             'charges' => request('brief') ? [] : $this->formatCharges($billable->asStripeCustomer()->charges(), array_column($invoices, 'id')),
             'subscriptions' => $formattedSubscriptions,
