@@ -65,9 +65,7 @@ class CashierToolController extends Controller
             $subscriptions = $billable->subscriptions()->where('id', $subscriptionId)->get();
         }
 
-        // echo print_r($subscriptions, true); exit;
-
-        if (!$subscriptions) {
+        if (!$subscriptions || is_null($billable->stripe_id)) {
             return [
                 'subscriptions' => [],
             ];
@@ -81,16 +79,16 @@ class CashierToolController extends Controller
         }
 
         // Get invoices
-        $invoices = (request('brief') || is_null($billable->stripe_id)) ? [] : $this->formatInvoices($billable->invoicesIncludingPending(), array_column($subscriptions->toArray(), 'stripe_id'));
+        $invoices = request('brief') ? [] : $this->formatInvoices($billable->invoicesIncludingPending(), array_column($subscriptions->toArray(), 'stripe_id'));
 
         // Return data
         return [
             'user' => $billable->toArray(),
-            'cards' => (request('brief') || is_null($billable->stripe_id)) ? [] : $this->formatCards($billable->cards(), $billable->defaultCard()->id),
+            'cards' => request('brief') ? [] : $this->formatCards($billable->cards(), $billable->defaultCard()->id),
             'invoices' => $invoices,
-            'charges' => (request('brief') || is_null($billable->stripe_id)) ? [] : $this->formatCharges($billable->asStripeCustomer()->charges(), array_column($invoices, 'id')),
+            'charges' => request('brief') ? [] : $this->formatCharges($billable->asStripeCustomer()->charges(), array_column($invoices, 'id')),
             'subscriptions' => $formattedSubscriptions,
-            'plans' => (request('brief') || is_null($billable->stripe_id)) ? [] : $this->formatPlans(Plan::all(['limit' => 100])),
+            'plans' => request('brief') ? [] : $this->formatPlans(Plan::all(['limit' => 100])),
         ];
     }
 
