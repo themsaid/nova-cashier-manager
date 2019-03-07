@@ -512,7 +512,7 @@ Nova.booting(function (Vue, router) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(20)
+  __webpack_require__(6)
 }
 var normalizeComponent = __webpack_require__(2)
 /* script */
@@ -557,8 +557,46 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 6 */,
-/* 7 */,
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(7);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(1)("3a52ee4e", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7528e89e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../node_modules/sass-loader/lib/loader.js!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ResourceTool.vue", function() {
+     var newContent = require("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7528e89e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../node_modules/sass-loader/lib/loader.js!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ResourceTool.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.subscription-div h3 {\n  margin-top: 10px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
 /* 8 */
 /***/ (function(module, exports) {
 
@@ -733,46 +771,50 @@ var render = function() {
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "w-3/4 py-4" }, [
-                        _c("p", { staticClass: "text-90" }, [
-                          subscription.on_grace_period
-                            ? _c("span", [_vm._v("On Grace Period")])
-                            : _vm._e(),
-                          _vm._v(" "),
-                          subscription.cancelled ||
-                          subscription.cancel_at_period_end
-                            ? _c("span", { staticClass: "text-danger" }, [
-                                _vm._v("Cancelled")
-                              ])
-                            : _vm._e(),
-                          _vm._v(" "),
-                          subscription.active &&
-                          !subscription.cancelled &&
-                          !subscription.cancel_at_period_end
-                            ? _c("span", [_vm._v("Active")])
-                            : _vm._e(),
-                          _vm._v(
-                            "\n                        ·\n                        "
-                          ),
-                          _c(
-                            "a",
-                            {
-                              staticClass: "text-primary no-underline",
-                              attrs: {
-                                href:
-                                  _vm.basePath +
-                                  "/cashier-tool/user/" +
-                                  _vm.resourceId +
-                                  "/subscriptions/" +
-                                  subscription.id
-                              }
-                            },
-                            [
-                              _vm._v(
-                                "\n                            Manage\n                        "
-                              )
-                            ]
-                          )
-                        ])
+                        _c(
+                          "p",
+                          { staticClass: "text-90" },
+                          [
+                            subscription.on_grace_period
+                              ? _c("span", [_vm._v("On Grace Period")])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            subscription.cancelled ||
+                            subscription.cancel_at_period_end
+                              ? _c("span", { staticClass: "text-danger" }, [
+                                  _vm._v("Cancelled")
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            subscription.active &&
+                            !subscription.cancelled &&
+                            !subscription.cancel_at_period_end
+                              ? _c("span", [_vm._v("Active")])
+                              : _vm._e(),
+                            _vm._v(
+                              "\n                        ·\n                        "
+                            ),
+                            _c(
+                              "router-link",
+                              {
+                                staticClass: "text-primary no-underline",
+                                attrs: {
+                                  to:
+                                    "/cashier-tool/user/" +
+                                    _vm.resourceId +
+                                    "/subscriptions/" +
+                                    subscription.id
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                            Manage\n                        "
+                                )
+                              ]
+                            )
+                          ],
+                          1
+                        )
                       ])
                     ]
                   )
@@ -1775,49 +1817,6 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 17 */,
-/* 18 */,
-/* 19 */,
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(21);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(1)("3a52ee4e", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7528e89e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../node_modules/sass-loader/lib/loader.js!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ResourceTool.vue", function() {
-     var newContent = require("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7528e89e\",\"scoped\":false,\"hasInlineConfig\":true}!../../../node_modules/sass-loader/lib/loader.js!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ResourceTool.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(0)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n.subscription-div h3 {\n  margin-top: 10px;\n}\n", ""]);
-
-// exports
-
 
 /***/ })
 /******/ ]);
