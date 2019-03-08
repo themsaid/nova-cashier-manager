@@ -38,10 +38,10 @@
 </script>
 
 <template>
-    <div>
+    <div class="card mb-6 py-3 px-6">
         <loading-view :loading="loading">
             <p class="text-90" v-if="!subscription">
-                User has no subscription.
+                No subscriptions
             </p>
 
             <div class="flex border-b border-40" v-if="subscription">
