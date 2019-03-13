@@ -63,7 +63,6 @@
                 }
             },
 
-
             /**
              * Cancel subscription.
              */
@@ -73,14 +72,14 @@
                     this.loading = true;
 
                     axios.post('/nova-cashier-tool-api/user/'+this.userId+'/subscriptions/'+this.subscriptionId+'/cancel')
-                        .then(response => {
-                            this.$toasted.show("Cancelled successfully!", {type: "success"});
+                    .then(response => {
+                        this.$toasted.show("Cancelled successfully!", {type: "success"});
 
-                            this.loadUserData();
-                        })
-                        .catch(errors => {
-                            this.$toasted.show(errors.response.data.message, {type: "error"});
-                        });
+                        this.loadUserData();
+                    })
+                    .catch(errors => {
+                        this.$toasted.show(errors.response.data.message, {type: "error"});
+                    });
                 }
             },
 
@@ -92,14 +91,14 @@
                 this.loading = true;
 
                 axios.post('/nova-cashier-tool-api/user/'+this.userId+'/subscriptions/'+this.subscriptionId+'/resume')
-                        .then(response => {
-                            this.$toasted.show("Resumed successfully!", {type: "success"});
+                .then(response => {
+                    this.$toasted.show("Resumed successfully!", {type: "success"});
 
-                            this.loadUserData();
-                        })
-                        .catch(errors => {
-                            this.$toasted.show(errors.response.data.message, {type: "error"});
-                        })
+                    this.loadUserData();
+                })
+                .catch(errors => {
+                    this.$toasted.show(errors.response.data.message, {type: "error"});
+                });
             },
 
 
@@ -110,14 +109,14 @@
                 this.loading = true;
 
                 axios.post('/nova-cashier-tool-api/user/'+this.userId+'/subscriptions/'+this.subscriptionId+'/update', {plan: this.newPlan})
-                        .then(response => {
-                            this.$toasted.show("Updated successfully!", {type: "success"});
+                .then(response => {
+                    this.$toasted.show("Updated successfully!", {type: "success"});
 
-                            this.loadUserData();
-                        })
-                        .catch(errors => {
-                            this.$toasted.show(errors.response.data.message, {type: "error"});
-                        })
+                    this.loadUserData();
+                })
+                .catch(errors => {
+                    this.$toasted.show(errors.response.data.message, {type: "error"});
+                });
             }
         }
     }

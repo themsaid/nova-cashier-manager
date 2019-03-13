@@ -68,6 +68,7 @@ class CashierToolController extends Controller
         if (!$subscriptions || is_null($billable->stripe_id)) {
             return [
                 'subscriptions' => [],
+                'plans' => $this->formatPlans(Plan::all()),
             ];
         }
 
@@ -84,7 +85,7 @@ class CashierToolController extends Controller
         // Return data
         return [
             'user' => $billable->toArray(),
-            'cards' => request('brief') ? [] : $this->formatCards($billable->cards(), $billable->defaultCard()->id),
+            'cards' => (request('brief') || ! $billable->defaultCard()) ? [] : $this->formatCards($billable->cards(), $billable->defaultCard()->id),
             'invoices' => $invoices,
             'charges' => request('brief') ? [] : $this->formatCharges($billable->asStripeCustomer()->charges(), array_column($invoices, 'id')),
             'subscriptions' => $formattedSubscriptions,
@@ -110,6 +111,22 @@ class CashierToolController extends Controller
         } else {
             return $billable->subscription($subscription->name)->cancel();
         }
+    }
+
+    /**
+     * Create subscription.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $billableId
+     * @return \Illuminate\Http\Response
+     */
+    public function createSubscription(Request $request, $billableId = null)
+    {
+        $plan = $request->input('plan');
+
+        $billable = (new $this->stripeModel)->find($billableId);
+
+        $subscription = $billable->newSubscription($plan['product'], $plan['id'])->create();
     }
 
     /**
@@ -292,7 +309,7 @@ class CashierToolController extends Controller
                 'price' => $plan->amount,
                 'interval' => $plan->interval,
                 'currency' => $plan->currency,
-                'interval_count' => $plan->interval_count,
+                'product' => $plan->product,
             ];
         })->toArray();
     }

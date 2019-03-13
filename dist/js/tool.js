@@ -643,7 +643,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             loading: true,
             user: null,
-            subscriptions: null
+            plans: null,
+            subscriptions: null,
+            plan: null
         };
     },
 
@@ -665,10 +667,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             axios.get('/nova-cashier-tool-api/user/' + this.resourceId + '/subscriptions').then(function (response) {
                 _this.user = response.data.user;
+                _this.plans = response.data.plans;
                 _this.subscriptions = response.data.subscriptions;
 
                 _this.loading = false;
             });
+        },
+        createSubscription: function createSubscription() {
+            var _this2 = this;
+
+            this.loading = true;
+
+            if (this.plan) {
+                axios.post('/nova-cashier-tool-api/user/' + this.resourceId + '/subscriptions/create', { plan: this.plan }).then(function (response) {
+                    _this2.$toasted.show("Created successfully!", { type: "success" });
+
+                    _this2.loadUserData();
+                }).catch(function (errors) {
+                    _this2.$toasted.show(errors.response.data.message, { type: "error" });
+                    _this2.loading = false;
+                });
+            } else {
+                this.$toasted.show("Please choose a plan.", { type: "error" });
+                this.loading = false;
+            }
         }
     }
 });
@@ -685,7 +707,81 @@ var render = function() {
     !_vm.subscriptions || _vm.subscriptions.length == 0
       ? _c("div", [
           _c("p", { staticClass: "text-90" }, [
-            _c("em", [_vm._v("User has no subscriptions.")])
+            _c("em", [_vm._v("User has no subscriptions.")]),
+            _vm._v(" "),
+            _c("br"),
+            _vm._v(" "),
+            _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.plan,
+                    expression: "plan"
+                  }
+                ],
+                staticClass: "form-control form-select",
+                on: {
+                  change: function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.plan = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0]
+                  }
+                }
+              },
+              [
+                _c(
+                  "option",
+                  {
+                    attrs: {
+                      value: "",
+                      disabled: "disabled",
+                      selected: "selected"
+                    }
+                  },
+                  [_vm._v("Choose Plan")]
+                ),
+                _vm._v(" "),
+                _vm._l(_vm.plans, function(plan) {
+                  return _c("option", { domProps: { value: plan } }, [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(plan.nickname) +
+                        " ($" +
+                        _vm._s(plan.price / 100) +
+                        ")\n                "
+                    )
+                  ])
+                })
+              ],
+              2
+            ),
+            _c("br"),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass:
+                  "btn btn-default btn-primary inline-flex items-center relative ml-auto mr-3",
+                attrs: { disabled: !_vm.plan },
+                on: {
+                  click: function($event) {
+                    return _vm.createSubscription()
+                  }
+                }
+              },
+              [_vm._v("\n                Subscribe\n            ")]
+            )
           ])
         ])
       : _c(
@@ -921,7 +1017,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* Scopes Styles */\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* Scopes Styles */\n", ""]);
 
 // exports
 
@@ -1217,7 +1313,7 @@ var render = function() {
                             staticClass: "btn btn-sm btn-outline",
                             on: {
                               click: function($event) {
-                                _vm.updateSubscription()
+                                return _vm.updateSubscription()
                               }
                             }
                           },
@@ -1303,7 +1399,7 @@ var render = function() {
                                 staticClass: "btn btn-sm btn-outline",
                                 on: {
                                   click: function($event) {
-                                    _vm.cancelSubscription()
+                                    return _vm.cancelSubscription()
                                   }
                                 }
                               },
@@ -1323,7 +1419,7 @@ var render = function() {
                                 staticClass: "btn btn-sm btn-outline",
                                 on: {
                                   click: function($event) {
-                                    _vm.resumeSubscription()
+                                    return _vm.resumeSubscription()
                                   }
                                 }
                               },
@@ -1519,7 +1615,7 @@ var render = function() {
                                 attrs: { disabled: charge.amount_refunded > 0 },
                                 on: {
                                   click: function($event) {
-                                    _vm.refundCharge(charge.id)
+                                    return _vm.refundCharge(charge.id)
                                   }
                                 }
                               },
