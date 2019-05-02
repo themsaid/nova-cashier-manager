@@ -25,7 +25,7 @@
 
         methods: {
             loadUserData(){
-                axios.get(`/nova-cashier-tool-api/user/${this.resourceId}/?brief=true`)
+                Nova.request().get(`/nova-cashier-tool-api/user/${this.resourceId}/?brief=true`)
                         .then(response => {
                             this.user = response.data.user;
                             this.subscription = response.data.subscription;

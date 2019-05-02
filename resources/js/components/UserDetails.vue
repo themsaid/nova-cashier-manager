@@ -27,7 +27,7 @@
              * Load the user data.
              */
             loadUserData(){
-                axios.get(`/nova-cashier-tool-api/user/${this.userId}`)
+                Nova.request().get(`/nova-cashier-tool-api/user/${this.userId}`)
                         .then(response => {
                             this.user = response.data.user;
                             this.subscription = response.data.subscription;
@@ -49,7 +49,7 @@
             refundCharge(chargeId){
                 this.loading = true;
 
-                axios.post(`/nova-cashier-tool-api/user/${this.userId}/refund/${chargeId}`)
+                Nova.request().post(`/nova-cashier-tool-api/user/${this.userId}/refund/${chargeId}`)
                         .then(response => {
                             this.$toasted.show("Refunded successfully!", {type: "success"});
 
@@ -67,7 +67,7 @@
             cancelSubscription(){
                 this.loading = true;
 
-                axios.post(`/nova-cashier-tool-api/user/${this.userId}/cancel`)
+                Nova.request().post(`/nova-cashier-tool-api/user/${this.userId}/cancel`)
                         .then(response => {
                             this.$toasted.show("Cancelled successfully!", {type: "success"});
 
@@ -85,7 +85,7 @@
             resumeSubscription(){
                 this.loading = true;
 
-                axios.post(`/nova-cashier-tool-api/user/${this.userId}/resume`)
+                Nova.request().post(`/nova-cashier-tool-api/user/${this.userId}/resume`)
                         .then(response => {
                             this.$toasted.show("Resumed successfully!", {type: "success"});
 
@@ -103,7 +103,7 @@
             updateSubscription(){
                 this.loading = true;
 
-                axios.post(`/nova-cashier-tool-api/user/${this.userId}/update`, {plan: this.newPlan})
+                Nova.request().post(`/nova-cashier-tool-api/user/${this.userId}/update`, {plan: this.newPlan})
                         .then(response => {
                             this.$toasted.show("Updated successfully!", {type: "success"});
 
